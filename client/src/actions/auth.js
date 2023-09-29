@@ -27,7 +27,7 @@ export const signup = (formData, history) => async (dispatch) => {
 
 export const fetchAllUsers = () => async (dispatch) => {
   try {
-    const { data } = await api.all();
+    const { data } = await api.fetchUsers();
 
     dispatch({ type: FETCH_ALL, data });
   } catch (error) {

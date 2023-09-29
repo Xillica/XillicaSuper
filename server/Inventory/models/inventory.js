@@ -38,29 +38,92 @@ function useDatabase() {
       connection.end(); // Close the connection if there's an error
     } else {
       console.log("Using database 'inventory'.");
-      createTable();
+      createTables();
     }
   });
 }
 
-function createTable() {
+function createTables() {
   // Create the 'products' table if it doesn't exist
-  const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS products (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      product_name VARCHAR(255) NOT NULL,
-      quantity INT NOT NULL,
-      price DECIMAL(10, 2) NOT NULL,
-      supplier VARCHAR(255) NOT NULL,
-      added_date DATE NOT NULL
-    )
+  const createProductsTableQuery = `
+  CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
+    description VARCHAR(700) NOT NULL,
+    category VARCHAR(30) NOT NULL,
+    gender VARCHAR(30) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    supplier VARCHAR(255) NOT NULL,
+    added_date DATE NOT NULL,
+    likes VARCHAR(255)
+  );
   `;
 
-  connection.query(createTableQuery, (error) => {
+  // Create the 'colors' table with a foreign key constraint
+  const createColorsTableQuery = `
+  CREATE TABLE IF NOT EXISTS colors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    selectedFile VARCHAR(512), 
+    color VARCHAR(20),
+    FOREIGN KEY (productId) REFERENCES products(id)
+  );
+  `;
+
+  // Create the 'sizes' table
+  const createSizesTableQuery = `
+  CREATE TABLE IF NOT EXISTS sizes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    colorId INT,
+    size_name VARCHAR(20) NOT NULL,
+    FOREIGN KEY (productId) REFERENCES products(id),
+    FOREIGN KEY (colorId) REFERENCES colors(id)
+);
+  `;
+
+  // Create the 'quantity' table with foreign keys
+  const createQuantityTableQuery = `
+  CREATE TABLE IF NOT EXISTS quantity (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT,
+    sizeId INT,
+    colorId INT,
+    quantity INT NOT NULL,
+    FOREIGN KEY (productId) REFERENCES products(id),
+    FOREIGN KEY (sizeId) REFERENCES sizes(id),
+    FOREIGN KEY (colorId) REFERENCES colors(id)
+  );
+  `;
+
+  // Run each query separately
+  connection.query(createProductsTableQuery, (error) => {
     if (error) {
-      console.log("Error creating table:", error);
+      console.log("Error creating 'products' table:", error);
     } else {
-      console.log("Table 'products' created successfully.");
+      console.log("'products' table created successfully.");
+      // After 'products' table is created, create other tables
+      connection.query(createColorsTableQuery, (error) => {
+        if (error) {
+          console.log("Error creating 'colors' table:", error);
+        } else {
+          console.log("'colors' table created successfully.");
+          connection.query(createSizesTableQuery, (error) => {
+            if (error) {
+              console.log("Error creating 'sizes' table:", error);
+            } else {
+              console.log("'sizes' table created successfully.");
+              connection.query(createQuantityTableQuery, (error) => {
+                if (error) {
+                  console.log("Error creating 'quantity' table:", error);
+                } else {
+                  console.log("'quantity' table created successfully.");
+                }
+              });
+            }
+          });
+        }
+      });
     }
   });
 }

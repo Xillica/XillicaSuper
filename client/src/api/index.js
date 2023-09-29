@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = axios.create({ baseURL: "http://localhost:8000" });
+const API = axios.create();
 
 API.interceptors.request.use((req) => {
   if (localStorage.getItem("profile")) {
@@ -12,13 +12,24 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-// export const fetchPosts = () => API.get("/posts");
-// export const createPost = (newPost) => API.post("/posts", newPost);
-// export const updatePost = (id, updatedPost) =>
-//   API.patch(`/posts/${id}`, updatedPost);
-// export const deletePost = (id) => API.delete(`/posts/${id}`);
-// export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
+//Auth
+export const signIn = (formData) =>
+  API.post("http://localhost:8000/users/signin", formData);
+export const signUp = (formData) =>
+  API.post("http://localhost:8000/users/signup", formData);
+export const fetchUsers = () => API.get("http://localhost:8000/users/all");
 
-export const signIn = (formData) => API.post("/users/signin", formData);
-export const signUp = (formData) => API.post("/users/signup", formData);
-export const all = () => API.get("/users/all");
+//Products
+export const fetchProducts = () => API.get("http://localhost:8080/products");
+export const fetchProductById = (id) =>
+  API.get(`http://localhost:8080/products/${id}`);
+export const deleteProduct = (id) =>
+  API.delete(`http://localhost:8080/products/${id}`);
+export const likeProduct = (id) =>
+  API.patch(`http://localhost:8080/products/${id}/likePost`);
+export const addProduct = (productData) =>
+  API.post("http://localhost:8080/products/add", productData);
+export const updateProduct = (id, updatedProductData) =>
+  API.put(`http://localhost:8080/products/update/${id}`, updatedProductData);
+export const updateDetails = (id, updatedProductData) =>
+  API.put(`http://localhost:8080/products/updateDetails/${id}`, updatedProductData);
