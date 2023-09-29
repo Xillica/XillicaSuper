@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Button,
@@ -8,9 +8,8 @@ import {
   Container,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import "./Auth.css";
 import Input from "./Input";
-import { useNavigate } from "react-router-dom"; // Change this import
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signup, signin } from "../../actions/auth";
 
@@ -23,11 +22,17 @@ const initialState = {
 };
 
 function Auth() {
-  const navigate = useNavigate(); // Change this line
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [ShowPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState(initialState);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("profile")));
+    user && navigate("/");
+  }, [user, navigate]);
 
   const handleShowPassword = () =>
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -41,9 +46,9 @@ function Auth() {
     e.preventDefault();
 
     if (isSignup) {
-      dispatch(signup(formData, navigate("/home"))); // Change this line
+      dispatch(signup(formData, navigate("/")));
     } else {
-      dispatch(signin(formData, navigate("/home"))); // Change this line
+      dispatch(signin(formData, navigate("/")));
     }
   };
 
@@ -52,14 +57,45 @@ function Auth() {
   };
 
   return (
-    <Container className="paper1" component="main" maxWidth="xs">
-      <Paper className="paper" elevation={3}>
-        <Avatar className="avatar">
+    <Container
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+      component="main"
+      maxWidth="xs"
+    >
+      <Paper
+        sx={{
+          padding: 1, // Reduced padding
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+        elevation={0}
+        style={{ width: "70%" }}
+      >
+        <Avatar
+          sx={{ bgcolor: "secondary.main" }}
+          style={{ background: "black" }}
+        >
           <LockOutlinedIcon />
         </Avatar>
-        <Typography variant="h5">{isSignup ? "Sign Up" : "Sign In"}</Typography>
-        <form className="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
+        <Typography
+          variant="h6"
+          sx={{ mt: 1, mb: 2, fontSize: "1rem" }}
+          style={{ marginBottom: "30px" }}
+        >
+          {" "}
+          {/* Reduced font size */}
+          {isSignup ? "Sign Up" : "Sign In"}
+        </Typography>
+        <form onSubmit={handleSubmit} sx={{ width: "100%", mt: 1 }}>
+          <Grid container spacing={1}>
+            {" "}
+            {/* Reduced spacing */}
             {isSignup && (
               <>
                 <Input
@@ -101,21 +137,26 @@ function Auth() {
           </Grid>
           <Button
             type="submit"
-            fullWidth
             variant="contained"
-            color="success"
-            className="submit"
-            style={{ marginTop: "30px", marginBottom: "15px" }}
+            style={{
+              background: "black",
+              borderRadius: "20px",
+              marginTop: "30px",
+            }}
+            sx={{ mt: 2, mb: 1 }}
           >
             {isSignup ? "Sign Up" : "Sign in"}
           </Button>
-          <Grid container justifyContent="flex-end">
-            <Button onClick={switchMode}>
-              {isSignup
-                ? "Already have an account? Sign In"
-                : "Still not Signed Up? Sign Up"}
-            </Button>
-          </Grid>
+          <div></div>
+          <Button
+            onClick={switchMode}
+            sx={{ alignSelf: "flex-end" }}
+            style={{ fontSize: "0.7rem", color: "gray" }}
+          >
+            {isSignup
+              ? "Already have an account? Sign In"
+              : "Still not Signed Up? Sign Up"}
+          </Button>
         </form>
       </Paper>
     </Container>
