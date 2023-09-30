@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../actions/product";
 
 import "./styles.css";
-import { updateDetails } from "../../actions/product";
+import { updateDetails, deleteProduct } from "../../actions/product";
 
 const AddProductInfoForm = () => {
   const [errors, setErrors] = useState({});
@@ -89,7 +89,7 @@ const AddProductInfoForm = () => {
       gender: clickedProduct.gender,
     });
 
-    setCurrentId(clickedProduct.product_id);
+    setCurrentId(clickedProduct.id);
   };
 
   return (
@@ -371,7 +371,7 @@ const AddProductInfoForm = () => {
       >
         {products.map((product) => (
           <Card
-            key={product.product_id}
+            key={product.id}
             style={{
               margin: "10px",
               maxWidth: "300px",
@@ -381,7 +381,7 @@ const AddProductInfoForm = () => {
               component="img"
               alt={product.product_name}
               height="140"
-              image="https://via.placeholder.com/150"
+              image={product.coverImage}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -413,6 +413,21 @@ const AddProductInfoForm = () => {
               }}
             >
               Edit
+            </Button>
+            <Button
+              onClick={() => dispatch(deleteProduct(product.id))}
+              size="small"
+              variant="outlined"
+              style={{
+                background: "black",
+                borderRadius: "20px",
+                marginBottom: "10px",
+                marginLeft: "10px",
+                color: "white",
+                fontSize: "small",
+              }}
+            >
+              Delete
             </Button>
           </Card>
         ))}

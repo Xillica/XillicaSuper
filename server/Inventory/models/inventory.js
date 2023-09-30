@@ -49,6 +49,7 @@ function createTables() {
   CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
+    coverImage VARCHAR(512), 
     description VARCHAR(700) NOT NULL,
     category VARCHAR(30) NOT NULL,
     gender VARCHAR(30) NOT NULL,
@@ -66,7 +67,7 @@ function createTables() {
     productId INT,
     selectedFile VARCHAR(512), 
     color VARCHAR(20),
-    FOREIGN KEY (productId) REFERENCES products(id)
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
   );
   `;
 
@@ -77,8 +78,8 @@ function createTables() {
     productId INT,
     colorId INT,
     size_name VARCHAR(20) NOT NULL,
-    FOREIGN KEY (productId) REFERENCES products(id),
-    FOREIGN KEY (colorId) REFERENCES colors(id)
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (colorId) REFERENCES colors(id) ON DELETE CASCADE
 );
   `;
 
@@ -90,9 +91,9 @@ function createTables() {
     sizeId INT,
     colorId INT,
     quantity INT NOT NULL,
-    FOREIGN KEY (productId) REFERENCES products(id),
-    FOREIGN KEY (sizeId) REFERENCES sizes(id),
-    FOREIGN KEY (colorId) REFERENCES colors(id)
+    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (sizeId) REFERENCES sizes(id) ON DELETE CASCADE,
+    FOREIGN KEY (colorId) REFERENCES colors(id) ON DELETE CASCADE
   );
   `;
 

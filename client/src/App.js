@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Explore from "./components/Explore/Explore";
 import AddProductForm from "./components/AddProduct/AddProduct";
 import AddProductInfoForm from "./components/AddProductDetails/AddProductDetails";
+import ExploreProduct from "./components/Explore/ExploreProduct";
 
 function App() {
   return (
@@ -16,9 +17,10 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/explore" element={<Explore />} />
+          <Route exact path="/explore" element={<Explore />} />
           <Route path="/addProduct" element={<AddProductForm />} />
           <Route path="/addProductDetails" element={<AddProductInfoForm />} />
+          <Route path="/explore/:id" element={<ExploreProduct />} />
         </Routes>
       </Router>
     </div>
