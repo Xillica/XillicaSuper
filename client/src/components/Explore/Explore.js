@@ -1,59 +1,125 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProducts } from "../../actions/product";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box"; // Import Box component for flex layout
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Grid,
+  Pagination,
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import "./styles.css";
 
 const ProductList = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(40); // Number of items to display per page
+
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  const count =
+    !isNaN(products.length) && !isNaN(itemsPerPage)
+      ? Math.ceil(products.length / itemsPerPage)
+      : 1;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
-    <div style={{ marginTop: "170px" }}>
-      <Box display="inline-flex" flexWrap="wrap" gap="30px">
-        {products.map((product) => (
-          <Card
-            key={product.product_id}
-            sx={{ maxWidth: 345, marginBottom: 20 }}
-          >
-            <CardMedia
-              component="img"
-              height="140"
-              image={
-                "https://images.unsplash.com/photo-1565462905097-5e701c31dcfb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBkcmVzc3xlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
-              }
-              alt={product.product_name}
+    <div className="product-list-container">
+      <Grid container spacing={3}>
+        <Grid item xs={1} sm={1} md={1} lg={3} xl={1} />
+        <Grid item xs={10} sm={10} md={10} lg={8} xl={10}>
+          <Grid container spacing={3}>
+            {currentItems.map((product) => (
+              <Grid item key={product.id} xs={12} sm={6} md={4} lg={3} xl={3}>
+                <Card
+                  sx={{ marginBottom: 2 }}
+                  elevation={0}
+                  className="explore--card"
+                >
+                  <Link
+                    to={`/explore/${product.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <CardMedia
+                      component="img"
+                      style={{ objectFit: "cover", height: "350px" }}
+                      image={product.coverImage}
+                      alt={product.product_name}
+                    />
+                    <CardContent>
+                      <Typography
+                        gutterBottom
+                        variant="h7"
+                        component="div"
+                        style={{
+                          color: "black",
+                          fontWeight: "600",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "100%",
+                        }}
+                        className="explore--card--name"
+                      >
+                        {product.product_name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "100%",
+                        }}
+                        className="explore--card--details"
+                      >
+                        {product.category} • {product.gender}
+                        <br />
+                        <Typography
+                          variant="h7"
+                          margin={0}
+                          style={{ fontWeight: "600" }}
+                          className="explore--card--price"
+                        >
+                          LKR {product.price}.00
+                        </Typography>
+                        <br />
+                        {/* Likes: {product.likes}
+                        <br /> */}
+                        {product.color}
+                      </Typography>
+                    </CardContent>
+                  </Link>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <div className="pagination">
+            <Pagination
+              count={count}
+              page={currentPage}
+              onChange={(event, page) => handlePageChange(page)}
+              variant="outlined"
+              shape="rounded"
             />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {product.product_name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Description: {product.description}
-                <br />
-                Category: {product.category}
-                <br />
-                Gender: {product.gender}
-                <br />
-                Price: {product.price}
-                <br />
-                Supplier: {product.supplier}
-                <br />
-                Likes: {product.likes}
-                <br />
-                Color: {product.color}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+          </div>
+        </Grid>
+        <Grid item xs={1} sm={1} md={1} lg={3} xl={1} />
+      </Grid>
     </div>
   );
 };

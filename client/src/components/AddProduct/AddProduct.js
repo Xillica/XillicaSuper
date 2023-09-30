@@ -40,6 +40,7 @@ const AddProductForm = () => {
     supplier: "",
     category: "",
     gender: "",
+    coverImage: "",
   });
 
   // Get currentId and other data from Redux store
@@ -93,6 +94,7 @@ const AddProductForm = () => {
       supplier: "",
       category: "",
       gender: "",
+      coverImage: "",
     });
   };
 
@@ -156,6 +158,24 @@ const AddProductForm = () => {
           helperText={errors.description}
           onFocus={() => {
             setErrors({ ...errors, description: "" });
+          }}
+        />
+
+        <TextField
+          sx={{ my: 0.5 }}
+          multiline
+          name="coverImage"
+          variant="outlined"
+          label="Cover Image URL"
+          fullWidth
+          value={productData.coverImage}
+          onChange={(e) =>
+            setProductData({ ...productData, coverImage: e.target.value })
+          }
+          error={Boolean(errors.coverImage)}
+          helperText={errors.coverImage}
+          onFocus={() => {
+            setErrors({ ...errors, coverImage: "" });
           }}
         />
 

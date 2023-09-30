@@ -5,7 +5,7 @@ import e from "method-override";
 
 // Display all products
 router.get("/", (req, res, next) => {
-  connection.query("SELECT * FROM products ORDER BY id DESC", (err, rows) => {
+  connection.query("SELECT * FROM products ORDER BY likes DESC, price DESC", (err, rows) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: "Internal Server Error" });
@@ -60,6 +60,7 @@ router.get("/:id", (req, res, next) => {
     "SELECT " +
       "p.id AS product_id, " + // Rename p.id to product_id
       "p.product_name, " +
+      "p.coverImage, " +
       "p.description, " +
       "p.category, " +
       "p.gender, " +
@@ -190,7 +191,7 @@ router.put("/update/:id", (req, res, next) => {
 });
 
 // Delete product if it exists
-router.delete("/delete/:id", (req, res, next) => {
+router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
 
   // Check if the product with the specified ID exists
@@ -378,9 +379,8 @@ router.put("/updateDetails/:id", async (req, res) => {
                   .status(500)
                   .json({ error: "Failed to insert color." });
               }
-
               // Get the colorId from the inserted color
-              const colorId = result.id;
+              const colorId = result.insertId;
 
               // Update the sizes table if quantities are available
               const sizes = [
