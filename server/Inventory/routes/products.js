@@ -5,15 +5,18 @@ import e from "method-override";
 
 // Display all products
 router.get("/", (req, res, next) => {
-  connection.query("SELECT * FROM products ORDER BY likes DESC, price DESC", (err, rows) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    } else {
-      console.log("Products fetched successfully!");
-      res.json(rows);
+  connection.query(
+    "SELECT * FROM products ORDER BY likes DESC, price DESC",
+    (err, rows) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+      } else {
+        console.log("Products fetched successfully!");
+        res.json(rows);
+      }
     }
-  });
+  );
 });
 
 // router.get("/", (req, res, next) => {
@@ -68,19 +71,14 @@ router.get("/:id", (req, res, next) => {
       "p.supplier, " +
       "p.added_date, " +
       "p.likes, " +
-      "c.productId AS color_productId, " + // Rename c.productId to color_productId
       "c.selectedFile AS color_selectedFile, " + // Rename c.selectedFile to color_selectedFile
       "c.color, " +
-      "s.productId AS size_productId, " + // Rename s.productId to size_productId
       "s.size_name, " +
-      "q.productId AS quantity_productId, " + // Rename q.productId to quantity_productId
-      "q.sizeId AS quantity_sizeId, " + // Rename q.sizeId to quantity_sizeId
-      "q.colorId AS quantity_colorId, " + // Rename q.colorId to quantity_colorId
       "q.quantity " +
       "FROM products p " +
-      "LEFT JOIN colors c ON p.id = c.productId " +
-      "LEFT JOIN sizes s ON p.id = s.productId " +
-      "LEFT JOIN quantity q ON p.id = q.productId " +
+      "JOIN colors c ON p.id = c.productId " +
+      "JOIN sizes s ON p.id = s.productId AND c.id = s.colorID " +
+      "JOIN quantity q ON p.id = q.productId AND c.id = q.colorId AND s.id = q.sizeId " +
       "WHERE p.id = ? " +
       "ORDER BY p.id DESC",
     [id],

@@ -10,8 +10,9 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Input from "./Input";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signup, signin } from "../../actions/auth";
+import { validateSignin, validateSignup } from "../../validation/auth"; // Import the validation functions
 
 const initialState = {
   firstName: "",
@@ -22,16 +23,19 @@ const initialState = {
 };
 
 function Auth() {
+  const userData = useSelector((state) => state.auth.authData);
   const navigate = useNavigate();
+  userData && navigate("/explore");
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState(null);
   const [ShowPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState(initialState);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+  const [errors, setErrors] = useState({}); // State for validation errors
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("profile")));
-    user && navigate("/");
   }, [user, navigate]);
 
   const handleShowPassword = () =>
@@ -40,15 +44,46 @@ function Auth() {
   const switchMode = () => {
     setIsSignup((prevMode) => !prevMode);
     setShowPassword(false);
+    setErrorMessage(null); // Clear the error message when switching modes
+    setErrors({}); // Clear validation errors
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (isSignup) {
-      dispatch(signup(formData, navigate("/")));
+      const signupErrors = validateSignup(formData);
+
+      if (Object.keys(signupErrors).length === 0) {
+        // No validation errors, proceed with sign-up
+        dispatch(
+          signup(formData, (error) => {
+            if (error) {
+              setErrorMessage(error.message);
+            }
+          })
+        );
+      } else {
+        // Validation errors found, set errors object
+        setErrors(signupErrors);
+      }
     } else {
-      dispatch(signin(formData, navigate("/")));
+      // Validate sign-in form data
+      const signinErrors = validateSignin(formData);
+
+      if (Object.keys(signinErrors).length === 0) {
+        // No validation errors, proceed with sign-in
+        dispatch(
+          signin(formData, (error) => {
+            if (error) {
+              setErrorMessage(error.message);
+            }
+          })
+        );
+      } else {
+        // Validation errors found, set errors object
+        setErrors(signinErrors);
+      }
     }
   };
 
@@ -69,7 +104,7 @@ function Auth() {
     >
       <Paper
         sx={{
-          padding: 1, // Reduced padding
+          padding: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -88,14 +123,33 @@ function Auth() {
           sx={{ mt: 1, mb: 2, fontSize: "1rem" }}
           style={{ marginBottom: "30px" }}
         >
-          {" "}
-          {/* Reduced font size */}
           {isSignup ? "Sign Up" : "Sign In"}
         </Typography>
+        {errorMessage && (
+          <Typography
+            variant="body2"
+            color="error"
+            style={{ marginBottom: "10px" }}
+          >
+            {errorMessage}
+          </Typography>
+        )}
+
+        {/* Display validation errors */}
+        {Object.keys(errors).length > 0 && (
+          <Typography
+            variant="body2"
+            color="error"
+            style={{ marginBottom: "10px" }}
+          >
+            {Object.values(errors).map((error) => (
+              <div key={error}>{error}</div>
+            ))}
+          </Typography>
+        )}
+
         <form onSubmit={handleSubmit} sx={{ width: "100%", mt: 1 }}>
           <Grid container spacing={1}>
-            {" "}
-            {/* Reduced spacing */}
             {isSignup && (
               <>
                 <Input
