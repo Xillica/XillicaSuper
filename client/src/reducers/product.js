@@ -9,7 +9,7 @@ const Products = (state = [], action) => {
         product.id === action.payload.id ? action.payload : product
       );
 
-    case "FETCH_PRODUCTS":
+      case "FETCH_PRODUCTS":
       return action.payload;
 
     case "CREATE":

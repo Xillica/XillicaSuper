@@ -40,3 +40,7 @@
 .explore--card:hover .explore--card--price {
   color: rgb(255, 255, 255) !important;
 }
+
+.singleProductContainer {
+  margin-top: 150px;
+}

@@ -12,7 +12,7 @@ import InfoIcon from "@mui/icons-material/Info";
 
 import Grid from "@mui/system/Unstable_Grid";
 import styled from "@mui/system/styled";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./styles.css";
@@ -81,6 +81,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const userData = useSelector((state) => state.auth.authData);
+
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -111,9 +113,13 @@ const Navbar = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }} style={{ position: "fixed", top: "0" }} className="navbar">
+    <Box
+      sx={{ flexGrow: 1 }}
+      style={{ position: "fixed", top: "0" }}
+      className="navbar"
+    >
       <div className="navBack"></div>
-      {user ? (
+      {userData ? (
         <Grid
           container
           spacing={{ xs: 2, md: 3 }}
@@ -156,7 +162,7 @@ const Navbar = () => {
                   className="icon-text"
                   style={{ textTransform: "uppercase" }}
                 >
-                  {user?.result.name}'s Profile
+                  {userData?.result.name}'s Profile
                 </span>
                 {!isDropdownOpen ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
                 <DropdownContent className={isDropdownOpen ? "show" : ""}>
