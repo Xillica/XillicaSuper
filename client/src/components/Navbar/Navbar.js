@@ -131,7 +131,7 @@ const Navbar = () => {
           <Grid xs={2} sm={4}>
             <Item to="/explore">
               <img
-                src="mainlogo.png"
+                src="https://res.cloudinary.com/dq8e751ni/image/upload/v1696230145/mn3vqsth2jmtasynvyyk.png"
                 alt="XillicaLogo"
                 width="100%"
                 style={{ marginTop: "-35%" }}

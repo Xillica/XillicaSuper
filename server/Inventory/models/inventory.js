@@ -1,132 +1,78 @@
-import mysql from "mysql";
+import pgPromise from "pg-promise";
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  port: 3306, // Default MySQL port is 3306
-  password: "",
-  connectionLimit: 10000,
-});
+const pgp = pgPromise();
 
-connection.connect((error) => {
-  if (!!error) {
-    console.log(error);
-  } else {
-    console.log("MySQL Server Connected Successfully..!!");
-    createDatabase();
+const dbConfig = {
+  user: "udana",
+  host: "goblin-dragon-6554.8nk.cockroachlabs.cloud",
+  database: "inventory",
+  password: "pKjmZrVrbZ0KPs2Q1iUh8A",
+  port: 26257,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+};
+
+const db = pgp(dbConfig);
+
+// Function to create tables
+async function createTables() {
+  try {
+    // Create the 'products' table
+    await db.none(`
+      CREATE TABLE IF NOT EXISTS products (
+        id SERIAL PRIMARY KEY,
+        product_name VARCHAR(255) NOT NULL,
+        coverImage VARCHAR(512),
+        description VARCHAR(700) NOT NULL,
+        category VARCHAR(30) NOT NULL,
+        gender VARCHAR(30) NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        supplier VARCHAR(255) NOT NULL,
+        added_date DATE NOT NULL,
+        likes VARCHAR(255)
+      );
+    `);
+
+    // Create the 'colors' table
+    await db.none(`
+      CREATE TABLE IF NOT EXISTS colors (
+        id SERIAL PRIMARY KEY,
+        product_id INT REFERENCES products(id) ON DELETE CASCADE,
+        selectedFile VARCHAR(512),
+        color VARCHAR(20)
+      );
+    `);
+
+    // Create the 'sizes' table
+    await db.none(`
+      CREATE TABLE IF NOT EXISTS sizes (
+        id SERIAL PRIMARY KEY,
+        product_id INT REFERENCES products(id) ON DELETE CASCADE,
+        color_id INT REFERENCES colors(id) ON DELETE CASCADE,
+        size_name VARCHAR(20) NOT NULL
+      );
+    `);
+
+    // Create the 'quantity' table
+    await db.none(`
+      CREATE TABLE IF NOT EXISTS quantity (
+        id SERIAL PRIMARY KEY,
+        product_id INT REFERENCES products(id) ON DELETE CASCADE,
+        size_id INT REFERENCES sizes(id) ON DELETE CASCADE,
+        color_id INT REFERENCES colors(id) ON DELETE CASCADE,
+        quantity INT NOT NULL
+      );
+    `);
+
+    console.log("Tables created successfully.");
+  } catch (error) {
+    console.error("Error creating tables:", error);
   }
-});
-
-function createDatabase() {
-  // Create the 'inventory' database if it doesn't exist
-  connection.query("CREATE DATABASE IF NOT EXISTS inventory", (error) => {
-    if (error) {
-      console.log("Error creating database:", error);
-      connection.end(); // Close the connection if there's an error
-    } else {
-      console.log("Database 'inventory' created successfully.");
-      useDatabase();
-    }
-  });
 }
 
-function useDatabase() {
-  // Use the 'inventory' database
-  connection.query("USE inventory", (error) => {
-    if (error) {
-      console.log("Error selecting database:", error);
-      connection.end(); // Close the connection if there's an error
-    } else {
-      console.log("Using database 'inventory'.");
-      createTables();
-    }
-  });
-}
+// Call the createTables function to create the tables
+createTables();
 
-function createTables() {
-  // Create the 'products' table if it doesn't exist
-  const createProductsTableQuery = `
-  CREATE TABLE IF NOT EXISTS products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_name VARCHAR(255) NOT NULL,
-    coverImage VARCHAR(512), 
-    description VARCHAR(700) NOT NULL,
-    category VARCHAR(30) NOT NULL,
-    gender VARCHAR(30) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    supplier VARCHAR(255) NOT NULL,
-    added_date DATE NOT NULL,
-    likes VARCHAR(255)
-  );
-  `;
-
-  // Create the 'colors' table with a foreign key constraint
-  const createColorsTableQuery = `
-  CREATE TABLE IF NOT EXISTS colors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    productId INT,
-    selectedFile VARCHAR(512), 
-    color VARCHAR(20),
-    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
-  );
-  `;
-
-  // Create the 'sizes' table
-  const createSizesTableQuery = `
-  CREATE TABLE IF NOT EXISTS sizes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    productId INT,
-    colorId INT,
-    size_name VARCHAR(20) NOT NULL,
-    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (colorId) REFERENCES colors(id) ON DELETE CASCADE
-);
-  `;
-
-  // Create the 'quantity' table with foreign keys
-  const createQuantityTableQuery = `
-  CREATE TABLE IF NOT EXISTS quantity (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    productId INT,
-    sizeId INT,
-    colorId INT,
-    quantity INT NOT NULL,
-    FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (sizeId) REFERENCES sizes(id) ON DELETE CASCADE,
-    FOREIGN KEY (colorId) REFERENCES colors(id) ON DELETE CASCADE
-  );
-  `;
-
-  // Run each query separately
-  connection.query(createProductsTableQuery, (error) => {
-    if (error) {
-      console.log("Error creating 'products' table:", error);
-    } else {
-      console.log("'products' table created successfully.");
-      // After 'products' table is created, create other tables
-      connection.query(createColorsTableQuery, (error) => {
-        if (error) {
-          console.log("Error creating 'colors' table:", error);
-        } else {
-          console.log("'colors' table created successfully.");
-          connection.query(createSizesTableQuery, (error) => {
-            if (error) {
-              console.log("Error creating 'sizes' table:", error);
-            } else {
-              console.log("'sizes' table created successfully.");
-              connection.query(createQuantityTableQuery, (error) => {
-                if (error) {
-                  console.log("Error creating 'quantity' table:", error);
-                } else {
-                  console.log("'quantity' table created successfully.");
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-  });
-}
-
-export default connection;
+// Export the database connection
+export default db;

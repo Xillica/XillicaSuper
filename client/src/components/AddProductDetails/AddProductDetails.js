@@ -381,7 +381,7 @@ const AddProductInfoForm = () => {
               component="img"
               alt={product.product_name}
               height="140"
-              image={product.coverImage}
+              image={product.coverimage}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">

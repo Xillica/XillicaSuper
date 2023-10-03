@@ -4,23 +4,22 @@ import flash from "express-flash";
 import session from "express-session";
 import productsRouter from "./routes/products.js";
 import cors from "cors";
+import db from "./models/inventory.js"; // Import the database connection
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow requests from this origin
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allow the specified HTTP methods
-    credentials: true, // Allow credentials (cookies, authorization headers)
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
   })
 );
 
-// view engine setup
 app.set("view engine", "ejs");
 
-// Increase payload size limit
-app.use(express.json({ limit: "10mb" })); // Set a larger limit (e.g., 10 megabytes)
-app.use(express.urlencoded({ limit: "10mb", extended: false })); // Set a larger limit (e.g., 10 megabytes)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: false }));
 
 app.use(
   session({
@@ -35,17 +34,20 @@ app.use(
 app.use(flash());
 app.use("/products", productsRouter);
 
-// catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, (err) => {
-  if (err) {
-    console.error(`Error starting the server: ${err}`);
-  } else {
-    console.log(`Server is running on port ${PORT}`);
-  }
-});
+// Use the database connection
+db.connect()
+  .then(() => {
+    console.log("Connected to the database");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to the database:", error);
+  });
