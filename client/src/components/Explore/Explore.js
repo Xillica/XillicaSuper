@@ -17,7 +17,7 @@ const ProductList = () => {
   const products = useSelector((state) => state.products);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(40); // Number of items to display per page
+  const [itemsPerPage] = useState(16); // Number of items to display per page
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -56,7 +56,7 @@ const ProductList = () => {
                     <CardMedia
                       component="img"
                       style={{ objectFit: "cover", height: "350px" }}
-                      image={product.coverImage}
+                      image={product.coverimage}
                       alt={product.product_name}
                     />
                     <CardContent>
