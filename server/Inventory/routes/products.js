@@ -28,63 +28,27 @@ router.get("/:id", async (req, res) => {
     );
 
     if (product) {
+      const colors = await db.any(
+        "SELECT color, id, color_code, selectedfile FROM colors WHERE product_id = $1",
+        id
+      );
+
+      const sizes = await db.any(
+        "SELECT DISTINCT size_name FROM sizes where product_id = $1",
+        id
+      );
+
+      const quantity = await db.any(
+        "SELECT * FROM quantity where product_id = $1",
+        id
+      );
+      const results = { colors, product, sizes, quantity };
+      // console.log("result: ", results);
       console.log("Product fetched successfully!");
-      res.json(product);
+      res.json(results);
     } else {
       res.status(404).json({ message: "Product not found" });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Retrieve products by color
-router.get("/color/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const query = `
-      SELECT *
-      FROM colors
-      WHERE product_id = $1`;
-
-    const products = await db.any(query, [id]);
-    console.log("Products fetched successfully!");
-    res.json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-router.get("/sizes/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const query = `
-      SELECT *
-      FROM sizes
-      WHERE product_id = $1`;
-
-    const products = await db.any(query, [id]);
-    console.log("Products fetched successfully!");
-    res.json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-router.get("/quantity/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const query = `
-      SELECT *
-      FROM quantity
-      WHERE product_id = $1`;
-
-    const products = await db.any(query, [id]);
-    console.log("Products fetched successfully!");
-    res.json(products);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -228,12 +192,24 @@ router.delete("/:id", async (req, res) => {
 router.put("/updateDetails/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const { color, selectedFile, xsq, sq, mq, lq, xlq, xxlq, txlq, fxlq } =
-      req.body;
+    const {
+      color,
+      color_code,
+      selectedFile,
+      xsq,
+      sq,
+      mq,
+      lq,
+      xlq,
+      xxlq,
+      txlq,
+      fxlq,
+    } = req.body;
 
     const colorData = {
       product_id: id,
       color: color,
+      color_code: color_code,
       selectedFile: selectedFile,
     };
 
@@ -243,16 +219,17 @@ router.put("/updateDetails/:id", async (req, res) => {
     const existingColor = await db.oneOrNone(colorCheckQuery, [id, color]);
 
     if (existingColor) {
-      res.status(400).json({ error: "Color is already in use." });
+      res.status(400).json({ error: "Color is already defined!." });
       return;
     }
 
     // Insert color data into the colors table
     const insertColorQuery =
-      "INSERT INTO colors (product_id, color, selectedFile) VALUES ($1, $2, $3) RETURNING *"; // Note the "RETURNING *" part
+      "INSERT INTO colors (product_id, color, color_code, selectedFile) VALUES ($1, $2, $3, $4) RETURNING *";
     const addedColor = await db.one(insertColorQuery, [
       colorData.product_id,
       colorData.color,
+      colorData.color_code,
       colorData.selectedFile,
     ]);
     console.log("Added Color:", addedColor);
@@ -303,7 +280,6 @@ router.put("/updateDetails/:id", async (req, res) => {
           colorId,
           size.quantity,
         ]);
-
       }
     }
 
@@ -311,6 +287,34 @@ router.put("/updateDetails/:id", async (req, res) => {
     res.status(200).json({
       success: "Color and sizes inserted/updated successfully.",
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/color/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const color = req.body.color;
+
+    // Check if the product with the specified ID exists
+
+    const existingColor = await db.oneOrNone(
+      "SELECT * FROM colors WHERE product_id = $1 AND color=$2",
+      [id, color]
+    );
+    console.log(existingColor);
+    if (!existingColor) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    // Delete the product
+    await db.none("DELETE FROM colors WHERE id = $1", existingColor.id);
+
+    console.log("Product deleted successfully");
+    res.status(200).json({ message: "Color deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

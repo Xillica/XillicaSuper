@@ -28,6 +28,7 @@ const AddProductInfoForm = () => {
     category: "",
     gender: "",
     color: "",
+    color_code: "",
     selectedFile: "",
     quantity: "",
     xsq: "",
@@ -48,14 +49,39 @@ const AddProductInfoForm = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const handleSubmit = (error) => {
-    try {
-      error.preventDefault();
-      dispatch(updateDetails(currentId, productData));
-      clear();
-    } catch (error) {
-      console.error(error);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Define an array to hold error messages
+    const formErrors = [];
+
+    // Check for required fields
+    if (!productData.product_name) {
+      formErrors.push("Product Name is required");
     }
+    if (!productData.description) {
+      formErrors.push("Description is required");
+    }
+    if (!productData.price) {
+      formErrors.push("Price is required");
+    }
+    if (!productData.color) {
+      formErrors.push("Color is required");
+    }
+    if (!productData.color_code) {
+      formErrors.push("Color Code is required");
+    }
+    // Add additional required fields here
+
+    // If there are any errors, set the errors state and return
+    if (formErrors.length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
+    // If no errors, proceed with form submission
+    dispatch(updateDetails(currentId, productData));
+    clear();
   };
 
   const clear = () => {
@@ -67,6 +93,7 @@ const AddProductInfoForm = () => {
       category: "",
       gender: "",
       color: "",
+      color_code: "",
       selectedFile: "",
       quantity: "",
       xsq: "",
@@ -137,6 +164,7 @@ const AddProductInfoForm = () => {
               variant="outlined"
               label="Product Name"
               fullWidth
+              required
               value={productData.product_name}
               onChange={(e) =>
                 setProductData({ ...productData, product_name: e.target.value })
@@ -155,6 +183,7 @@ const AddProductInfoForm = () => {
               variant="outlined"
               label="Description"
               fullWidth
+              required
               value={productData.description}
               onChange={(e) =>
                 setProductData({ ...productData, description: e.target.value })
@@ -173,6 +202,7 @@ const AddProductInfoForm = () => {
               variant="outlined"
               label="Price"
               fullWidth
+              required
               value={productData.price}
               onChange={(e) =>
                 setProductData({ ...productData, price: e.target.value })
@@ -191,6 +221,7 @@ const AddProductInfoForm = () => {
               style={{ marginTop: "30px" }}
               label="Color"
               fullWidth
+              required
               value={productData.color}
               onChange={(e) =>
                 setProductData({ ...productData, color: e.target.value })
@@ -199,6 +230,25 @@ const AddProductInfoForm = () => {
               helperText={errors.color}
               onFocus={() => {
                 setErrors({ ...errors, color: "" });
+              }}
+            />
+            <TextField
+              sx={{ my: 0.5 }}
+              multiline
+              name="color_code"
+              variant="outlined"
+              style={{ marginTop: "30px" }}
+              label="ColorCode"
+              fullWidth
+              required
+              value={productData.color_code}
+              onChange={(e) =>
+                setProductData({ ...productData, color_code: e.target.value })
+              }
+              error={Boolean(errors.color_code)}
+              helperText={errors.color_code}
+              onFocus={() => {
+                setErrors({ ...errors, color_code: "" });
               }}
             />
             <TextField
