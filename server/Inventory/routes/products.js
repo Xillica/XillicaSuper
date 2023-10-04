@@ -29,7 +29,7 @@ router.get("/:id", async (req, res) => {
 
     if (product) {
       const colors = await db.any(
-        "SELECT color, id, color_code, selectedfile FROM colors WHERE product_id = $1",
+        "SELECT color, id, color_code, selectedfile FROM colors WHERE product_id = $1 ORDER BY id",
         id
       );
 

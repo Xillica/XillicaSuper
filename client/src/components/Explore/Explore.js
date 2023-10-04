@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import "./styles.css";
+import Loading from "../Loading/Loading";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,10 @@ const ProductList = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  if (!currentItems) {
+    return <Loading />;
+  }
 
   return (
     <div className="product-list-container">

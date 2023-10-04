@@ -30,16 +30,14 @@ const Home = () => {
     <Container maxWidth="100%" style={{ marginTop: "150px" }}>
       <Grow in>
         <Grid container spacing={2}>
-          <Grid xs>
-          </Grid>
+          <Grid xs></Grid>
           <Grid xs={4}>
             <Item></Item>
           </Grid>
           <Grid xs={4}>
             <Item></Item>
           </Grid>
-          <Grid xs>
-          </Grid>
+          <Grid xs></Grid>
         </Grid>
       </Grow>
     </Container>
