@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { MantineProvider } from "@mantine/core"; // Import MantineProvider
 import { Provider } from "react-redux";
 import store from "./app/store";
 
@@ -11,6 +12,8 @@ const root = createRoot(document.getElementById("root"));
 
 root.render(
   <Provider store={store}>
-    <App />
+    <MantineProvider>
+      <App />
+    </MantineProvider>
   </Provider>
 );

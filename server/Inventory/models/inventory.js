@@ -5,7 +5,7 @@ const pgp = pgPromise();
 const dbConfig = {
   user: "udana",
   host: "goblin-dragon-6554.8nk.cockroachlabs.cloud",
-  database: "inventory",
+  database: "Xillica",
   password: "pKjmZrVrbZ0KPs2Q1iUh8A",
   port: 26257,
   ssl: {
@@ -40,7 +40,8 @@ async function createTables() {
         id SERIAL PRIMARY KEY,
         product_id INT REFERENCES products(id) ON DELETE CASCADE,
         selectedFile VARCHAR(512),
-        color VARCHAR(20)
+        color VARCHAR(20),
+        color_code VARCHAR(20)
       );
     `);
 

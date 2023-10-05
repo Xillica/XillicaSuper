@@ -22,7 +22,7 @@ const mode = "light"; // Replace with your desired mode (either "dark" or "light
 const Item = styled(Link)(({ theme }) => ({
   border: "0px solid",
   borderColor: mode === "dark" ? "#444d58" : "#ced7e0",
-  padding: theme.spacing(6),
+  padding: theme.spacing(5),
   borderRadius: "0px",
   textAlign: "center",
   letterSpacing: "1px",
@@ -47,9 +47,10 @@ const IconItem = styled(Item)(({ theme }) => ({
 const DropdownContent = styled("div")(({ theme }) => ({
   display: "none",
   position: "absolute",
-  backgroundColor: "#f9f9f9",
+  backgroundColor: "#f5f5f5",
   borderRadius: "10px",
   minWidth: "250px",
+  textAlign: "left",
   zIndex: 1,
   top: "100px",
   opacity: 0,
@@ -60,16 +61,16 @@ const DropdownContent = styled("div")(({ theme }) => ({
 }));
 
 const DropdownItem = styled("div")(({ theme }) => ({
-  padding: "12px 16px",
+  padding: "6px 12px",
   textDecoration: "none",
   display: "block",
   borderRadius: "10px",
-  border: "0.1px solid",
+  fontSize: "13px",
   marginTop: "5px",
 
   color: "black",
   "&:hover": {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#e1e1e1",
   },
 }));
 
@@ -114,8 +115,14 @@ const Navbar = () => {
 
   return (
     <Box
-      sx={{ flexGrow: 1 }}
-      style={{ position: "fixed", top: "0" }}
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column", // Change to column layout
+        justifyContent: "center", // Center vertically
+        alignItems: "center", // Center horizontally
+      }}
+      style={{ position: "fixed", top: "0", width: "100%" }} // Add width: "100%" to stretch across the screen
       className="navbar"
     >
       <div className="navBack"></div>
@@ -129,25 +136,40 @@ const Navbar = () => {
             <Item></Item>
           </Grid>
           <Grid xs={2} sm={4}>
-            <Item to="/explore">
-              <img
-                src="https://res.cloudinary.com/dq8e751ni/image/upload/v1696230145/mn3vqsth2jmtasynvyyk.png"
-                alt="XillicaLogo"
-                width="100%"
-                style={{ marginTop: "-35%" }}
-              />
-            </Item>
+            <Link to="/">
+              <div
+                style={{
+                  position: "relative",
+                  top: "0px",
+                  overflow: "hidden",
+                  width: "100%",
+                }}
+              >
+                <img
+                  src="https://res.cloudinary.com/dq8e751ni/image/upload/v1696230145/mn3vqsth2jmtasynvyyk.png"
+                  alt="XillicaLogo"
+                  width="40%"
+                  style={{
+                    objectFit: "cover",
+                    position: "relative",
+                    top: "0px",
+                  }}
+                />
+              </div>
+            </Link>
           </Grid>
           <Grid xs={2} sm={4}>
             <Item to="/explore">
-              <ExploreIcon style={{ marginRight: "5px", color: "black" }} />
+              <ExploreIcon
+                style={{ marginRight: "5px", color: "black", fontSize: "15px" }}
+              />
               <span className="icon-text">EXPLORE</span>
             </Item>
           </Grid>
           <Grid xs={2} sm={2}>
             <Item to="cart">
               <ShoppingCartIcon
-                style={{ marginRight: "5px", color: "black" }}
+                style={{ marginRight: "5px", color: "black", fontSize: "15px" }}
               />
               <span className="icon-text">CART</span>
             </Item>
@@ -156,7 +178,11 @@ const Navbar = () => {
             <ProfileContainer>
               <IconItem onClick={toggleDropdown}>
                 <AccountCircleIcon
-                  style={{ marginRight: "5px", color: "black" }}
+                  style={{
+                    marginRight: "5px",
+                    color: "black",
+                    fontSize: "15px",
+                  }}
                 />
                 <span
                   className="icon-text"
@@ -186,30 +212,49 @@ const Navbar = () => {
             <Item></Item>
           </Grid>
           <Grid xs={2} sm={4}>
-            <Item to="/explore">
-              <img
-                src="mainlogo.png"
-                alt="XillicaLogo"
-                width="100%"
-                style={{ marginTop: "-35%" }}
-              />
-            </Item>
+            <Link to="/">
+              <div
+                style={{
+                  position: "relative",
+                  top: "0px",
+                  overflow: "hidden",
+                  width: "100%",
+                }}
+              >
+                <img
+                  src="https://res.cloudinary.com/dq8e751ni/image/upload/v1696230145/mn3vqsth2jmtasynvyyk.png"
+                  alt="XillicaLogo"
+                  width="50%"
+                  style={{
+                    objectFit: "cover",
+                    position: "relative",
+                    top: "0px",
+                  }}
+                />
+              </div>
+            </Link>
           </Grid>
           <Grid xs={2} sm={4}>
             <Item to="/explore">
-              <ExploreIcon style={{ marginRight: "5px", color: "black" }} />
+              <ExploreIcon
+                style={{ marginRight: "5px", color: "black", fontSize: "15px" }}
+              />
               <span className="icon-text">EXPLORE</span>
             </Item>
           </Grid>
           <Grid xs={2} sm={4}>
             <Item to="/auth">
-              <LoginIcon style={{ marginRight: "5px", color: "black" }} />
+              <LoginIcon
+                style={{ marginRight: "5px", color: "black", fontSize: "15px" }}
+              />
               <span className="icon-text">SIGNUP/SIGNIN</span>
             </Item>{" "}
           </Grid>
           <Grid xs={2} sm={4}>
             <Item to="/auth">
-              <InfoIcon style={{ marginRight: "5px", color: "black" }} />
+              <InfoIcon
+                style={{ marginRight: "5px", color: "black", fontSize: "15px" }}
+              />
               <span className="icon-text">INFO</span>
             </Item>
           </Grid>

@@ -18,7 +18,7 @@ export const fetchProducts = () => async (dispatch) => {
 };
 export const fetchProductById = (id) => async (dispatch) => {
   try {
-    const { data } = await api.fetchProductById(id); // Modify the API call to accept an ID
+    const { data } = await api.fetchProductById(id);
     console.log(data);
     dispatch({ type: FETCH_PRODUCTS_BY_ID, payload: data });
   } catch (error) {
